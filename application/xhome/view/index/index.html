@@ -3,13 +3,13 @@
 <!--广告-->
 <div class="banner">
 	<div class="ban-con">
-		<ul class="con col-lg-12 col-md-10 col-sm-8 col-xs-6">
-			<li class="col-lg-2 col-md-4 col-sm-6 col-xs-6">广告位</li>
-			<li class="col-lg-2 col-md-4 col-sm-6 col-xs-6">广告位</li>
-			<li class="col-lg-2 col-md-4 col-sm-6 col-xs-6">广告位</li>
-			<li class="col-lg-2 col-md-4 col-sm-6 col-xs-6">广告位</li>
-			<li class="col-lg-2 col-md-4 col-sm-6 col-xs-6">广告位</li>
-			<li class="col-lg-2 col-md-4 col-sm-6 col-xs-6">广告位</li>
+		<ul class="con col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<li class="col-lg-2 col-md-3 col-sm-4 col-xs-4">广告位</li>
+			<li class="col-lg-2 col-md-3 col-sm-4 col-xs-4">广告位</li>
+			<li class="col-lg-2 col-md-3 col-sm-4 col-xs-4">广告位</li>
+			<li class="col-lg-2 col-md-3 col-sm-4 col-xs-4">广告位</li>
+			<li class="col-lg-2 col-md-3 col-sm-4 col-xs-4">广告位</li>
+			<li class="col-lg-2 col-md-3 col-sm-4 col-xs-4">广告位</li>
 		</ul>
 	</div>
 </div>
@@ -18,63 +18,58 @@
 <!--头部-->
 <div class="header">
 	<div class="hea-con">
-		<div class="con-left" style="padding:0px;">
-			<ul class="layui-nav col-lg-12 heder_a" lay-filter="">
-				<li class="layui-nav-item">
-					<a href="#">Home</a>
+		<div class="con-left col-lg-9 col-md-10 col-sm-10 col-xs-8" style="padding:0px;">
+			<ul class="layui-nav heder_a layui-row" lay-filter="">
+				<li class="layui-nav-item layui-show-xs-inline">
+					<a href="#" class="a_home">
+						<span class="glyphicon glyphicon-home home-1" aria-hidden="true"></span>
+					</a>
 				</li>
-				<li class="layui-nav-item">
-					<a href="#">subMenu1</a>
+				<li class="layui-nav-item layui-hide-xs">
+					<a href="">subMenu1</a>
 				</li>
-				<li class="layui-nav-item">
-					<a href="#">subMenu2</a>
+				<li class="layui-nav-item layui-hide-xs">
+					<a href="">subMenu2</a>
 				</li>
-				<li class="layui-nav-item">
-					<a href="#">subMenu3</a>
+				<li class="layui-nav-item layui-hide-xs">
+					<a href="">subMenu3</a>
 				</li>
-				<li class="layui-nav-item">
-					<a href="#">subMenu4</a>
+				<li class="layui-nav-item layui-hide-xs">
+					<a href="">subMenu4</a>
 				</li>
-				<li class="layui-nav-item">
-					<a href="#">subMenu5</a>
+				<li class="layui-nav-item layui-hide-xs">
+					<a href="">subMenu5</a>
 				</li>
-				<li class="layui-nav-item">
-					<a href="#">subMenu6</a>
-				</li>
-				<li class="layui-nav-item">
-					<a href="#">subMenu7</a>
+				<li class="layui-nav-item layui-hide-xs">
+					<a href="">subMenu5</a>
 				</li>
 			</ul>
 		</div>
-		<div class="con-right">
+		<div class="con-right col-lg-3 col-md-2 col-sm-2 col-xs-4">
 			<?php if(is_null(session('userInfo','','xhome'))){ ?>
-			<a href="{:url('xhome/index/QqLogin')}"><img src="__IMG__/mystyle/img/fodder/bt_blue_24X24.png" alt=""></a>
-			<?php 	}else{   ?>
-			<div class="user_img">
-				<img src="<?php echo session('userInfo.head_img','','xhome') ?>" alt="" />
-			</div>
-			<div class="user_info">
-				<p class="user_name"><?php echo session('userInfo.username','','xhome') ?></p>
-				<a href="{:url('xhome/index/QqLoginOut')}">退出</a>
-			</div>
-			<?php	}  ?>
+			   	<a href="{:url('xhome/index/QqLogin')}" class="qq_login">
+			   		<img src="__IMG__/mystyle/img/fodder/bt_blue_76X24.png" alt="">
+			   	</a>
+			<?php }else{ ?>
+			   	<div class="user_img">
+			   		<img src="<?php echo session('userInfo.head_img','','xhome'); ?>" alt="" />
+			   	</div>
+			   	<div class="user_info">
+			   		<p class="user_name"><?php echo session('userInfo.username','','xhome'); ?></p>
+					<a href="{:url('xhome/index/QqLoginOut')}" class="">退出</a>
+			   	</div>
+			<?php } ?>
 		</div>
 	</div>
 </div>
 <!--头部end-->
+
 <script>
-	//注意：导航 依赖 element 模块，否则无法进行功能性操作
 	layui.use('element', function() {
 		var element = layui.element;
-
-		//…
 	});
-</script>
-
-<!--标题添加class-->
-<script>
 	$(function() {
-
+		
 		$(".heder_a li").click(function() {
 			$.session.set('key', $(this).index());
 		});
@@ -86,6 +81,31 @@
 
 		$(".heder_a li").eq(index).addClass('layui-this');
 		$(".heder_a li").eq(index).siblings('li').removeClass('layui-this');
+
+		var btn = 1;
+		$(".a_home").click(function() {
+			if(btn == 1) {
+				$(this).parents('li').siblings('li').removeClass('layui-hide-xs');
+				$(this).parents('li').siblings('li').addClass('layui-show-xs-inline');
+				btn++;
+			} else {
+				$(this).parents('li').siblings('li').removeClass('layui-show-xs-inline');
+				$(this).parents('li').siblings('li').addClass('layui-hide-xs');
+				btn = 1;
+			}
+		});
+		
+		var btn2 =1;
+		$(".con-right .user_img img").click(function(){
+			if(btn2 == 1){
+				$(".con-right .user_info").show('50');
+				btn2++;
+			}else{
+				$(".con-right .user_info").hide('50');
+				btn2 = 1;
+			}
+		});
 	});
+	
 </script>
 {/block}

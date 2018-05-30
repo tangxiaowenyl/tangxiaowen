@@ -49,7 +49,7 @@ class Index extends Common{
                 try{
                     $userData = [
                         'username'   => $userInfo['nickname'],
-                        'head_img'   => $userInfo['figureurl_qq_1'],
+                        'head_img'   => !is_null($userInfo['figureurl_qq_2'])?$userInfo['figureurl_qq_2']:$userInfo['figureurl_qq_1'],
                         'login_time' => time(),
                         'login_ip'   => request()->ip(),
                         'login_num'  => 1,
@@ -80,7 +80,7 @@ class Index extends Common{
                 try{
                     $userData = [
                         'username'   => $userInfo['nickname'],
-                        'head_img'   => $userInfo['figureurl_qq_1'],
+                        'head_img'   => !is_null($userInfo['figureurl_qq_2'])?$userInfo['figureurl_qq_2']:$userInfo['figureurl_qq_1'],
                         'login_time' => time(),
                         'login_ip'   => request()->ip(),
                         'login_num'  => $isData['login_num'] + 1,
