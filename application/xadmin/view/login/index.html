@@ -1,0 +1,51 @@
+{extend name="public/header" /} 
+{block name="contents"}
+<form class="layui-form" action="">
+	<div class="layui-form-item">
+		<label class="layui-form-label">账户</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" required lay-verify="required" placeholder="请输入账户" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">密码</label>
+		<div class="layui-input-block">
+			<input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<input type="hidden" name="__token__" value="{$Request.token}"/>
+			<button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</div>
+</form>
+
+<script>
+	layui.use('form', function() {
+		var form = layui.form;
+
+		//监听提交
+		form.on('submit(formDemo)', function(data) {
+			var param = JSON.stringify(data.field);
+			$.ajax({
+                type: "post",
+                url: "{:url('xadmin/login/index')}",
+                data: {"param": param},
+                dataType: "json",
+                success: function(phpData) {
+                	if(phpData.code === 1){
+                		layer.msg(phpData.msg, {icon: 1, time: 1500});
+            		 	window.location.href = phpData.url_;
+                	}else{
+                		layer.msg(phpData.msg, {icon: 2, time: 1500});
+                	}
+                	$("input[name='__token__']").val(phpData.token);
+                }
+            });
+			return false;
+		});
+	});
+</script>
+{/block}

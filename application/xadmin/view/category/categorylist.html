@@ -1,0 +1,298 @@
+{extend name="public/header"/} {block name="contents"}
+<div class="layui-row header_box">
+	<form class="layui-form user-from" action="">
+		<ul>
+			<li class="layui-inline">分类状态：</li>
+			<li class="layui-inline">
+				<input type="radio" name="status" value="0" title="默认" checked>
+			</li>
+			<li class="layui-inline">
+				<input type="radio" name="status" value="1" title="正常">
+			</li>
+			<li class="layui-inline">
+				<input type="radio" name="status" value="2" title="禁用">
+			</li>
+		</ul>
+		<ul class="layui-inline xiao_pat_15">
+			<li class="layui-inline">时间范围：</li>
+			<li class="layui-inline" title="默认为本月初时间"><input type="text" name="str_time" class="layui-input" id="str_time" placeholder="开始时间"></li>
+			<li class="layui-inline" title="默认为本月末时间"><input type="text" name="end_time" class="layui-input" id="end_time" placeholder="结束时间"></li>
+			<li class="layui-inline"><button class="layui-btn" lay-submit lay-filter="formDemo">确定</button></li>
+			<li class="layui-inline"><button type="reset" class="layui-btn layui-btn-primary">重置</button></li>
+			<a href="javascript:;" class="layui-btn add_btn"><i class="layui-icon">&#xe608;</i> 添加</a>
+		</ul>
+	</form>
+	<ul class="xiao_pat_15">
+		<li class="layui-inline">分类搜索：</li>
+		<li class="layui-inline"><input type="text" name="key" id="queryOrder" placeholder="请输入分类名" class="layui-input query_in"></li>
+		<li class="layui-inline"><button class="layui-btn mt_queryOrderBtn">搜索</button></li>
+	</ul>
+</div>
+
+<!--add-category-from-->
+<form class="layui-form addCategoryForm" action="" style="display: none;">
+	<div class="modal-body">
+
+		<div class="layui-form-item">
+			<label class="layui-form-label">分类名</label>
+			<div class="layui-input-block">
+				<input type="text" name="name" required lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item" pane>
+			<label class="layui-form-label">状态</label>
+			<div class="layui-input-block">
+				<input type="radio" name="status" value="0" title="正常" checked="checked">
+				<input type="radio" name="status" value="1" title="禁用">
+			</div>
+		</div>
+
+	</div>
+	<div class="modal-footer">
+		<input type="hidden" name="__token__" value="{$Request.token}" />
+		<button class="layui-btn" lay-submit lay-filter="addCategory">确定</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+<!--add-category-from-end-->
+
+<!--edit-category-modal-->
+<form class="layui-form editCategoryForm" lay-filter="editCategoryForm2" action="" style="display: none;">
+	<p style="font-size:16;line-height: 24px;color:#FF5722;text-align:center;background:#393D49;">(此处状态栏可能显示异常或错误，不选为原始默认状态)</p>
+	<div class="modal-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">分类名</label>
+			<div class="layui-input-block">
+				<input type="text" name="name" required lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input categoryName">
+			</div>
+		</div>
+		<div class="layui-form-item" pane>
+			<label class="layui-form-label">状态</label>
+			<div class="layui-input-block">
+				<input type="hidden" name="key" value="" class="categoryId" />
+				<input type="hidden" name="__token__" value="{$Request.token}" />
+				<input type="radio" name="status" value="0" title="正常" class="categoryStatusOn">
+				<input type="radio" name="status" value="1" title="禁用" class="categoryStatusOff">
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="layui-btn" lay-submit lay-filter="editCategory">确定</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+<!--edit-category-modal-end-->
+
+<div class="layui-row">
+	<table id="demo" lay-filter="xiao_table"></table>
+
+	<script type="text/html" id="barDemo">
+		<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+	</script>
+
+	<script type="text/html" id="switchTpl">
+		<input type="checkbox" name="status" value="{{d.id}}" lay-skin="switch" lay-text="开启|禁用" lay-filter="sexDemo" {{ d.status==0 ? 'checked' : '1' }}>
+	</script>
+</div>
+
+<script>
+	layui.use(['laypage', 'laytpl', 'laydate', 'form', 'table'], function() {
+		var form = layui.form;
+		var table = layui.table;
+
+		//开始日期
+		layui.laydate.render({
+			elem: '#str_time', //指定元素
+			done: function(value, date) {}
+		});
+		//结束日期
+		layui.laydate.render({
+			elem: '#end_time', //指定元素
+			done: function(value, date) {}
+		});
+
+		//查询
+		param = {},
+		form.on('submit(formDemo)', function(data) {
+			param = JSON.stringify(data.field);
+			run_init();
+			return false;
+		});
+		
+		//分页函数
+		run_init();
+		function run_init() {
+			table.render({
+				elem: '#demo',	//表格table
+				url: "{:url('xiaoa/category/categoryList')}", //数据接口
+				where: {
+					param: param	//接口请求参数
+				},
+				height: 650,	//表格table高度
+				limit: 15,	//每页15条
+				page: true,	//开启分页
+				text: {
+					none: '暂无分类'
+				},
+				cols: [
+					[{
+						type: 'checkbox',
+						fixed: 'left'
+					}, {
+						field: 'id',
+						align: 'center',
+						width: 100,
+						title: 'ID',
+						sort: true,
+						fixed: 'left'
+					}, {
+						field: 'name',
+						align: 'center',
+						title: '分类名称',
+						event: 'setCategoryName',
+					}, {
+						field: 'create_time',
+						align: 'center',
+						title: '创建时间',
+						sort: true,
+						event: 'setCategoryTime'
+					}, {
+						field: 'status',
+						align: 'center',
+						title: '状态',
+						width: 100,
+						templet: '#switchTpl',
+						unresize: true
+					}, {
+						fixed: 'right',
+						align: 'center',
+						width: 200,
+						align: 'center',
+						title: '操作',
+						toolbar: '#barDemo'
+					}]
+				]
+			});
+		}
+
+		//删除编辑分类
+		table.on('tool(xiao_table)', function(obj) {	//监听表格事件
+			var data = obj.data;
+			if(obj.event === 'del') {
+				layer.confirm('真的删除行么', {
+					title: '温馨提示',	//弹窗标题
+					shadeClose: true,	//开启遮罩点击其它区域关闭
+					anim: 4,			//弹窗动画
+					skin: 'layui-layer-molv',	//弹窗主题
+				}, function(index) {	//index是当前弹窗的序号 对应layer.close(index);表示关闭当前这个弹窗
+					var token = $("input[name='__token__']").val();
+					var key_ = data.id;
+					$.ajax({
+						type: "post",
+						url: "{:url('xiaoa/category/delCagetory')}",
+						dataType: "json",
+						data: {
+							"key": key_,
+							"__token__": token
+						},
+						success: function(phpData) {
+							if(phpData.code === 1) {
+								obj.del();
+								layer.msg(phpData.msg);
+							} else {
+								layer.msg(phpData.msg);
+							}
+							$("input[name='__token__']").val(phpData.token);
+						}
+					});
+					layer.close(index);	//index是当前弹窗的序号 表示关闭当前这个弹窗
+				});
+			} else if(obj.event === 'edit' || obj.event === 'setCategoryName' || obj.event === 'setCategoryTime') {
+				
+				$(".editCategoryForm .categoryName").val(data.name);
+				$(".editCategoryForm .categoryId").val(data.id);
+				
+				if(!data.status) {
+					$(".editCategoryForm .categoryStatusOn").attr("checked", "checked");
+				} else {
+					$(".editCategoryForm .categoryStatusOff").attr("checked", "checked");
+				}
+				form.render();
+				layer.open({
+					type: 1,
+					title: '编辑分类',
+					shadeClose: true,
+					anim: 4,
+					area: ['500px'],
+					content: $('.editCategoryForm'),
+					skin: 'layui-layer-molv'
+				});
+				
+				form.on('submit(editCategory)', function(data) {
+					var param = JSON.stringify(data.field);
+					$.ajax({
+						type: "post",
+						url: "{:url('xiaoa/category/editCategory')}",
+						dataType: "json",
+						data: {
+							"param": param
+						},
+						success: function(phpData) {
+							if(phpData.code === 1) {
+								run_init();
+								layer.msg(phpData.msg);
+							} else {
+								layer.msg(phpData.msg);
+							}
+							$("input[name='__token__']").val(phpData.token);
+						}
+					});
+					return false;
+				});
+			}
+		});
+
+		//监听性别操作
+		form.on('switch(sexDemo)', function(obj) {
+			layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+		});
+
+		//添加分类
+		$(".add_btn").click(function() {
+			layer.open({
+				type: 1,
+				title: '添加分类',
+				shadeClose: true,
+				anim: 4,
+				area: ['500px'],
+				content: $('.addCategoryForm'),
+				skin: 'layui-layer-molv',
+			});
+		});
+		form.on('submit(addCategory)', function(data) {
+			var param = JSON.stringify(data.field);
+			$.ajax({
+				type: "post",
+				url: "{:url('xiaoa/category/addCategory')}",
+				dataType: "json",
+				data: {
+					"param": param
+				},
+				success: function(phpData) {
+					if(phpData.code === 1) {
+						run_init();
+						layer.msg(phpData.msg);
+					} else {
+						layer.msg(phpData.msg);
+					}
+					$("input[name='__token__']").val(phpData.token);
+				}
+			});
+			return false;
+		});
+
+	});
+</script>
+
+{/block}

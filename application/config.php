@@ -236,4 +236,8 @@ return [
         'var_page'  => 'page',
         'list_rows' => 15,
     ],
+
+    'auto_timestamp' => 'datetime',
+
+
 ];

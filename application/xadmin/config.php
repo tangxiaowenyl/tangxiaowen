@@ -6,9 +6,9 @@ return [
     // | 静态文件路径配置
     // +----------------------------------------------------------------------
     'view_replace_str' => [
-        '__CSS__' => '/static/common',
-        '__JS__'  => '/static/common',
-        '__IMG__' => '/static/common',
+        '__CSS__' => '/static',
+        '__JS__'  => '/static',
+        '__IMG__' => '/static',
     ],
 
 ];
